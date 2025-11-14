@@ -1,31 +1,32 @@
 package ca.concordia.filesystem.datastructures;
 
-import java.util.LinkedList;
-
 public class FEntry {
 
+    // filename == null  → this inode slot is free
     private String filename;
     private short filesize;
-    private short firstBlock; // Pointers to data blocks
+    private short firstBlock;  // index into fnode array, -1 if none
 
-    public FEntry(String filename, short filesize, short firstblock) throws IllegalArgumentException{
-        //Check filename is max 11 bytes long
-        if (filename.length() > 11) {
-            throw new IllegalArgumentException("Filename cannot be longer than 11 characters.");
-        }
-        this.filename = filename;
-        this.filesize = filesize;
-        this.firstBlock = firstblock;
+    public FEntry() {
+        this.filename = null;
+        this.filesize = 0;
+        this.firstBlock = -1;
     }
 
-    // Getters and Setters
+    public FEntry(String filename, short filesize, short firstBlock) {
+        setFilename(filename);
+        setFilesize(filesize);
+        this.firstBlock = firstBlock;
+    }
+
     public String getFilename() {
         return filename;
     }
 
     public void setFilename(String filename) {
-        if (filename.length() > 11) {
-            throw new IllegalArgumentException("Filename cannot be longer than 11 characters.");
+        // allow null (used to mark free inode)
+        if (filename != null && filename.length() > 11) {
+            throw new IllegalArgumentException("ERROR: filename too large");
         }
         this.filename = filename;
     }
@@ -36,12 +37,16 @@ public class FEntry {
 
     public void setFilesize(short filesize) {
         if (filesize < 0) {
-            throw new IllegalArgumentException("Filesize cannot be negative.");
+            throw new IllegalArgumentException("ERROR: filesize cannot be negative");
         }
         this.filesize = filesize;
     }
 
     public short getFirstBlock() {
         return firstBlock;
+    }
+
+    public void setFirstBlock(short firstBlock) {
+        this.firstBlock = firstBlock;
     }
 }
